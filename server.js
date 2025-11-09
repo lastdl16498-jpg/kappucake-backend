@@ -55,7 +55,39 @@ app.post("/verify-and-email", (req, res) => {
     return res.json({ success: false, error: "Verification Failed" });
   }
 });
+await sheets.spreadsheets.values.append({
+  spreadsheetId: SPREADSHEET_ID,
+  range: "Sheet1!A:Z",
+  valueInputOption: "USER_ENTERED",
+  requestBody: {
+    values: [[
+      orderData.customer.name,
+      orderData.customer.phone,
+      orderData.customer.email,
+      orderData.customer.address,
+      orderData.deliveryDate,
+      orderData.timeSlot,
+      orderData.preferredTime,
+      orderData.flavour2 ? `${orderData.flavour1} + ${orderData.flavour2}` : orderData.flavour1,
+      orderData.weight + " kg",
+      orderData.message,
+      orderData.price,
+      razorpay_payment_id,
+      new Date().toLocaleString("en-IN")
+    ]]
+  }
+});
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`KappuCake backend running on port ${PORT}`));
+import { google } from "googleapis";
+import fs from "fs";
+
+const auth = new google.auth.GoogleAuth({
+  keyFile: "serviceAccount.json",
+  scopes: ["https://www.googleapis.com/auth/spreadsheets"]
+});
+
+const sheets = google.sheets({ version: "v4", auth });
+const SPREADSHEET_ID = "1MyZOutnr0Afe0AS01282tz5LIOEfAFHVJMLd4mSXpxE"; // <- Replace this
