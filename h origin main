@@ -1,0 +1,41 @@
+[33mcommit 073ea94e60e94704fd99863631fdfdc1ddda2be5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: lastdl16498 <lastdl16498@gmail.com>
+Date:   Sun Nov 9 20:00:19 2025 +0530
+
+    Add gitignore to protect secret keys
+
+[33mcommit d81d1cb8338bdcc2340aced7d924fb0c7f7ca7b0[m
+Author: lastdl16498 <lastdl16498@gmail.com>
+Date:   Sun Nov 9 19:58:20 2025 +0530
+
+    Remove service account key from repository
+
+[33mcommit 6e83786d9ffb129100863797a29d000574749f8e[m
+Author: lastdl16498 <lastdl16498@gmail.com>
+Date:   Sun Nov 9 19:34:14 2025 +0530
+
+    Added Google Sheets order logging
+
+[33mcommit 444fe22f2f232408e51dff650f9722fbbc616ccb[m[33m ([m[1;31morigin/main[m[33m)[m
+Author: lastdl16498 <lastdl16498@gmail.com>
+Date:   Fri Nov 7 19:33:35 2025 +0530
+
+    Fix Render port issue
+
+[33mcommit 3e3a00924dce3b05f06d8ba80423accda1e99c31[m
+Author: lastdl16498 <lastdl16498@gmail.com>
+Date:   Fri Nov 7 19:10:17 2025 +0530
+
+    Updated backend payment verification code
+
+[33mcommit c82f40a16207e20edcc89bfd52ec6791ff7b3fc5[m
+Author: lastdl16498 <lastdl16498@gmail.com>
+Date:   Tue Oct 14 17:58:47 2025 +0530
+
+    Initial commit - KappuCake backend
+
+[33mcommit b24589595ea205a541386cd0015d91343488b49a[m
+Author: Daksh Chauhan <lastdl16498@gmail.com>
+Date:   Fri Sep 26 09:38:41 2025 +0530
+
+    Initial commit
