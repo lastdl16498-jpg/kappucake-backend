@@ -1,10 +1,4 @@
 node_modules/
 .env
-.DS_Store
-
-# Google service keys
 serviceAccount.json
-Serviceaccount.json
 
-# Prevent JSON secrets
-*.json
