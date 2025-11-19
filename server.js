@@ -17,6 +17,36 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
+// ---------- Booking settings (min days + festival blocks) ----------
+/**
+ * IMPORTANT:
+ * - minDaysFromToday: minimum gap between today and delivery date.
+ * - blockedDates: dates (YYYY-MM-DD) that are totally closed, with a
+ *   friendly REASON that will be shown to the customer.
+ *
+ * EXAMPLES:
+ *   '2025-10-20': 'Diwali pre-orders are fully booked for this date ✨ Please choose another day.'
+ *   '2025-12-31': 'New Year’s Eve slots are sold out. Kindly pick a nearby date.'
+ *
+ * To change Diwali / Holi etc., just edit this object and redeploy.
+ */
+const bookingSettings = {
+  minDaysFromToday: 5,
+  blockedDates: {
+    // Example Diwali block (EDIT or REMOVE as you like)
+    // '2025-10-20': 'Diwali pre-orders are fully booked for this date ✨ Please choose another day.'
+  }
+};
+
+// Public endpoint so frontend can read booking rules
+app.get('/booking-settings', (req, res) => {
+  res.json({
+    success: true,
+    minDaysFromToday: bookingSettings.minDaysFromToday,
+    blockedDates: bookingSettings.blockedDates
+  });
+});
+
 // ---------- Pricing logic (same as frontend) ----------
 const MIX_PREMIUM = 0.10;
 const PROFIT_MARGIN = 0.09;
@@ -61,12 +91,16 @@ function calculateFinalPrice(b1, b2, mix, weight) {
 
 // ---------- Google Sheets helper ----------
 async function appendToSheet(orderData, razorpayPaymentId) {
-  if (!process.env.GOOGLE_SERVICE_ACCOUNT_JSON || !process.env.GOOGLE_SHEET_ID) {
+  // Accept both GOOGLE_SERVICE_ACCOUNT_JSON and GOOGLE_SERVICE_ACCOUNT for convenience
+  const rawServiceAccount =
+    process.env.GOOGLE_SERVICE_ACCOUNT_JSON || process.env.GOOGLE_SERVICE_ACCOUNT;
+
+  if (!rawServiceAccount || !process.env.GOOGLE_SHEET_ID) {
     console.warn('[Sheets] Skipping: env not configured');
     return;
   }
 
-  const creds = JSON.parse(process.env.GOOGLE_SERVICE_ACCOUNT_JSON);
+  const creds = JSON.parse(rawServiceAccount);
   const auth = new google.auth.GoogleAuth({
     credentials: creds,
     scopes: ['https://www.googleapis.com/auth/spreadsheets']
@@ -153,8 +187,11 @@ async function getZohoAccessToken() {
 
 // ---------- Email via Zoho ----------
 async function sendOrderEmail(orderData, amountRupees, razorpayPaymentId) {
-  if (!process.env.ZOHO_FROM_EMAIL) {
-    console.warn('[Email] Skipping: ZOHO_FROM_EMAIL not set');
+  // Accept either ZOHO_FROM_EMAIL or ZOHO_FROM (matches your Render env)
+  const FROM_EMAIL = process.env.ZOHO_FROM_EMAIL || process.env.ZOHO_FROM;
+
+  if (!FROM_EMAIL) {
+    console.warn('[Email] Skipping: ZOHO_FROM_EMAIL / ZOHO_FROM not set');
     return;
   }
 
@@ -166,7 +203,7 @@ async function sendOrderEmail(orderData, amountRupees, razorpayPaymentId) {
     secure: true,
     auth: {
       type: 'OAuth2',
-      user: process.env.ZOHO_FROM_EMAIL,
+      user: FROM_EMAIL,
       clientId: process.env.ZOHO_CLIENT_ID,
       clientSecret: process.env.ZOHO_CLIENT_SECRET,
       refreshToken: process.env.ZOHO_REFRESH_TOKEN,
@@ -200,9 +237,9 @@ async function sendOrderEmail(orderData, amountRupees, razorpayPaymentId) {
   `;
 
   const mailOptions = {
-    from: `KappuCake <${process.env.ZOHO_FROM_EMAIL}>`,
+    from: `KappuCake <${FROM_EMAIL}>`,
     to: customer.email,
-    bcc: process.env.ZOHO_FROM_EMAIL, // keep a copy for yourself
+    bcc: FROM_EMAIL, // keep a copy for yourself
     subject,
     html
   };
